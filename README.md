@@ -1,6 +1,6 @@
 # erigrus-website
 
-Static site hosting the public pages for [Erik Gruschka](mailto:erik.gruschka@mailbox.org)'s
+Static site hosting the public pages for [Erik Gruschka](mailto:info@erigrus.de)'s
 iOS apps, served at **https://erigrus.de** via GitHub Pages.
 
 Plain HTML — no build step. Edit a file, commit, push; it's live in ~1 minute.
