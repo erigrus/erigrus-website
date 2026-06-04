@@ -129,6 +129,13 @@ strong { color: var(--text); }
   padding: 16px 20px;
   margin-top: 28px;
 }
+.contact p { margin: 0; }
+.contact p + p { margin-top: 10px; }
+.contact .signature {
+  color: var(--muted);
+  font-size: 14px;
+  font-style: italic;
+}
 
 hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 
