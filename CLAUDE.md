@@ -4,10 +4,14 @@ Guidance for AI coding sessions on this repo.
 
 ## What this is
 
-Static site for **https://erigrus.de**, served by **GitHub Pages directly from
-`main`**. No build step, no framework — edit an HTML/CSS file, commit, push, and
-it's live in ~1 minute. Keep DE (`index.html`, `dashjam/…`) and EN
+Static site for **https://erigrus.de**. No build step, no framework — edit an
+HTML/CSS file, commit, push. Keep DE (`index.html`, `dashjam/…`) and EN
 (`en/…`, `dashjam/en/…`) versions in sync. See `README.md` for the page map.
+
+**Deploys:** GitHub Actions publishes the site. Pushes to `main` deploy to the
+`gh-pages` branch (`.github/workflows/deploy.yml`); Pages serves `gh-pages`.
+Each PR is previewed at `https://erigrus.de/pr-preview/pr-<N>/`
+(`.github/workflows/pr-preview.yml`), removed automatically on close.
 
 ## Staging mirror protocol  ⚠️ read this every session
 
