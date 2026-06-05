@@ -5,6 +5,25 @@ iOS apps, served at **https://erigrus.de** via GitHub Pages.
 
 Plain HTML — no build step. Edit a file, commit, push; it's live in ~1 minute.
 
+## Deploys & PR previews
+
+Production is published by GitHub Actions (`.github/workflows/deploy.yml`):
+every push to `main` assembles the site and deploys it to the **`gh-pages`**
+branch. Pushing to `main` is still "edit, push, live".
+
+Every pull request gets a public **preview** at
+`https://erigrus.de/pr-preview/pr-<N>/` (via
+`.github/workflows/pr-preview.yml` + `rossjrw/pr-preview-action`); it's torn
+down automatically when the PR closes. Previews include the PR's `/staging/`
+mirror.
+
+> **One-time setup:** in **Settings → Pages**, set the source to the
+> **`gh-pages` branch / `root`**. Until that switch is made, the Actions
+> publish to `gh-pages` but the live site keeps serving from `main` (no
+> downtime). `CNAME` and `.nojekyll` are carried into `gh-pages` automatically.
+
+Preview and `/staging/` paths are excluded from search via `robots.txt`.
+
 ## Structure
 
 ```

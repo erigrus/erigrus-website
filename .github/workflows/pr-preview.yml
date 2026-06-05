@@ -1,0 +1,43 @@
+name: PR preview
+
+# Publishes each open PR (including its /staging/ mirror) to the gh-pages branch
+# under pr-preview/pr-<N>/, reachable at https://erigrus.de/pr-preview/pr-<N>/.
+# The preview is removed automatically when the PR is closed/merged.
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# Share the gh-pages write lock with the production deploy.
+concurrency:
+  group: gh-pages-write
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assemble site (includes /staging/ from the PR branch)
+        if: github.event.action != 'closed'
+        run: |
+          mkdir _site
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='scripts' \
+            --exclude='_site' \
+            --exclude='README.md' \
+            --exclude='CLAUDE.md' \
+            --exclude='.gitignore' \
+            --exclude='CNAME' \
+            ./ _site/
+
+      - name: Deploy / update / remove preview
+        uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: _site

@@ -1,0 +1,46 @@
+name: Deploy site to GitHub Pages
+
+# Production deploy: assemble the site and publish it to the `gh-pages` branch.
+# Pages must be configured to serve from `gh-pages` / root (one-time settings
+# switch — see README.md). Pushing to `main` is still "edit, push, live".
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Serialize all writes to the gh-pages branch (production + PR previews share it).
+concurrency:
+  group: gh-pages-write
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assemble site
+        run: |
+          mkdir _site
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='scripts' \
+            --exclude='_site' \
+            --exclude='README.md' \
+            --exclude='CLAUDE.md' \
+            --exclude='.gitignore' \
+            ./ _site/
+
+      - name: Publish to gh-pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: _site
+          clean: true
+          # Never wipe live PR previews on a production deploy.
+          clean-exclude: |
+            pr-preview/
