@@ -11,10 +11,11 @@ permissions:
   contents: write
   pull-requests: write
 
-# Share the gh-pages write lock with the production deploy.
+# Per-PR lock, separate from production. A newer push to the same PR supersedes
+# its own older preview build, but previews never touch the production deploy.
 concurrency:
-  group: gh-pages-write
-  cancel-in-progress: false
+  group: pr-preview-${{ github.event.number }}
+  cancel-in-progress: true
 
 jobs:
   preview:

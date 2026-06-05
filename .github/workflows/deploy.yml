@@ -11,9 +11,10 @@ on:
 permissions:
   contents: write
 
-# Serialize all writes to the gh-pages branch (production + PR previews share it).
+# Production deploys get their own lock so a burst of PR-preview events can
+# never cancel a production deploy. Never cancel an in-progress deploy.
 concurrency:
-  group: gh-pages-write
+  group: pages-production
   cancel-in-progress: false
 
 jobs:
