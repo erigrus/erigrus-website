@@ -38,16 +38,19 @@ under `staging/`; edit the real pages and rebuild.
 2. **Keep it fresh:** after changing any public page, re-run
    `./scripts/build-staging.sh` so the mirror reflects your changes.
 
-3. **Remove before merging to `main`:** staging must **never** ship to the live
-   site. As the final step before the PR merges:
+3. **Removal is automated:** staging must **never** ship to the live site, and
+   two safety nets enforce that without manual steps:
 
-   ```bash
-   ./scripts/clean-staging.sh
-   ```
+   - the production deploy (`.github/workflows/deploy.yml`) excludes
+     `staging/` from the published site, so it can't reach erigrus.de even if
+     it lands on `main`;
+   - an auto-cleanup workflow
+     (`.github/workflows/clean-staging-on-main.yml`) deletes `staging/` from
+     `main` right after any merge that still contains it.
 
-   Commit the removal. A CI guard
-   (`.github/workflows/no-staging-on-main.yml`) fails the build if `staging/`
-   ever lands on `main` — treat a red guard as "run clean-staging.sh".
+   Running `./scripts/clean-staging.sh` and committing the removal as the
+   final step before merging is still welcome (it keeps the cleanup commit out
+   of `main`'s history), but forgetting it no longer breaks anything.
 
 In short: **every new PR reactivates `/staging/`; every merge to `main` removes
 it.**

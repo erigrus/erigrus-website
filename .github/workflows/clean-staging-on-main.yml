@@ -1,0 +1,44 @@
+name: Clean staging on main
+
+# /staging/ is a preview-only mirror that must never ship to the live site.
+# The production deploy (deploy.yml) already excludes it from the published
+# site; this workflow keeps `main` itself clean by auto-removing staging/
+# whenever a PR merges without having run scripts/clean-staging.sh.
+# See CLAUDE.md → "Staging mirror protocol".
+#
+# Pushes made with the default GITHUB_TOKEN do not trigger further workflow
+# runs, so the cleanup commit cannot loop or fire a redundant deploy.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: clean-staging-main
+  cancel-in-progress: false
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Remove staging/ if present
+        run: |
+          if [ ! -d staging ]; then
+            echo "OK: no staging/ on main."
+            exit 0
+          fi
+          echo "::notice::staging/ found on main — removing it automatically."
+          ./scripts/clean-staging.sh
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A staging
+          git commit -m "Remove staging mirror from main (automated cleanup)"
+          # Another merge may have landed in the meantime; rebase and push.
+          git pull --rebase origin main
+          git push origin main
