@@ -34,6 +34,7 @@ jobs:
             --exclude='README.md' \
             --exclude='CLAUDE.md' \
             --exclude='.gitignore' \
+            --exclude='staging' \
             ./ _site/
 
       - name: Publish to gh-pages

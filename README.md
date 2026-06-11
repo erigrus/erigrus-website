@@ -15,7 +15,9 @@ Every pull request gets a public **preview** at
 `https://erigrus.de/pr-preview/pr-<N>/` (via
 `.github/workflows/pr-preview.yml` + `rossjrw/pr-preview-action`); it's torn
 down automatically when the PR closes. Previews include the PR's `/staging/`
-mirror.
+mirror; production deploys exclude it, and a cleanup workflow
+(`.github/workflows/clean-staging-on-main.yml`) auto-removes `staging/` if it
+ever lands on `main`.
 
 > **One-time setup:** in **Settings → Pages**, set the source to the
 > **`gh-pages` branch / `root`**. Until that switch is made, the Actions
