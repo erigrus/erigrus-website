@@ -20,7 +20,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 # Top-level public content to mirror (exclude infra + staging itself).
-PAGES=(index.html en dashjam impressum datenschutz)
+PAGES=(index.html en dashjam febra impressum datenschutz)
 
 rm -rf staging
 mkdir -p staging
