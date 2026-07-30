@@ -29,10 +29,16 @@ Preview and `/staging/` paths are excluded from search via `robots.txt`.
 ## Structure
 
 ```
-/                       index.html        — studio landing
+/                       index.html        — studio landing (DE)
+/en/                    index.html        — studio landing (EN)
 /dashjam/               index.html        — DashJam app page
 /dashjam/privacy/       index.html        — DashJam privacy policy (App Store URL)
 /dashjam/support/       index.html        — DashJam support (App Store URL)
+/dashjam/en/…           index.html        — English DashJam pages
+/febra/                 index.html        — Febra app page
+/febra/privacy/         index.html        — Febra privacy policy (App Store URL)
+/febra/support/         index.html        — Febra support (App Store URL)
+/febra/en/…             index.html        — English Febra pages
 /assets/                style.css, icons
 CNAME                   custom domain (erigrus.de)
 .nojekyll               serve files as-is, skip Jekyll
@@ -41,6 +47,8 @@ CNAME                   custom domain (erigrus.de)
 
 ## App Store Connect URLs
 
+**DashJam**
+
 | Field | URL |
 |---|---|
 | Privacy Policy URL | `https://erigrus.de/dashjam/privacy/` |
@@ -48,6 +56,23 @@ CNAME                   custom domain (erigrus.de)
 
 The DashJam page content is kept in sync with the source drafts in the app repo
 at `apps/ios/docs/app-store/{privacy-policy,support}.md`.
+
+**Febra** — German is the primary App Store locale, so the DE pages are the
+default URLs and the EN pages go on the English (U.S.) localization.
+
+| Field | URL |
+|---|---|
+| Privacy Policy URL (DE) | `https://erigrus.de/febra/privacy/` |
+| Support URL (DE) | `https://erigrus.de/febra/support/` |
+| Marketing URL (DE) | `https://erigrus.de/febra/` |
+| Privacy Policy URL (EN) | `https://erigrus.de/febra/en/privacy/` |
+| Support URL (EN) | `https://erigrus.de/febra/en/support/` |
+| Marketing URL (EN) | `https://erigrus.de/febra/en/` |
+
+The Febra page content is kept in sync with the source drafts in the
+[FebraApp](https://github.com/erigrus/FebraApp) repo at
+`docs/{privacy-policy,privacy-policy.de,support}.md`; the listing copy those
+pages echo lives in `docs/app-store-submission.md`.
 
 ## Adding a new app
 
