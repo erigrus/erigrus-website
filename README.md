@@ -47,15 +47,25 @@ CNAME                   custom domain (erigrus.de)
 
 ## App Store Connect URLs
 
-**DashJam**
+**DashJam** — on the App Store at
+<https://apps.apple.com/de/app/dashjam/id6777179664> (app ID `6777179664`),
+linked from `/dashjam/` and `/dashjam/en/`.
 
 | Field | URL |
 |---|---|
-| Privacy Policy URL | `https://erigrus.de/dashjam/privacy/` |
-| Support URL | `https://erigrus.de/dashjam/support/` |
+| Privacy Policy URL (EN) | `https://erigrus.de/dashjam/en/privacy/` |
+| Support URL (EN) | `https://erigrus.de/dashjam/en/support/` |
+| Marketing URL (EN) | `https://erigrus.de/dashjam/en/` |
+| Privacy Policy URL (DE) | `https://erigrus.de/dashjam/privacy/` |
+| Support URL (DE) | `https://erigrus.de/dashjam/support/` |
+| Marketing URL (DE) | `https://erigrus.de/dashjam/` |
+
+English (U.S.) is DashJam's primary App Store locale, so the EN pages are the
+default URLs and the DE pages go on the German localization.
 
 The DashJam page content is kept in sync with the source drafts in the app repo
-at `apps/ios/docs/app-store/{privacy-policy,support}.md`.
+at `apps/ios/docs/app-store/{privacy-policy,privacy-policy.de,support,support.de}.md`;
+the listing copy those pages echo lives in `apps/ios/docs/app-store/README.md`.
 
 **Febra** — German is the primary App Store locale, so the DE pages are the
 default URLs and the EN pages go on the English (U.S.) localization.
