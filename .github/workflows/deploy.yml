@@ -5,12 +5,15 @@ name: Deploy site to GitHub Pages
 # switch — see README.md). Pushing to `main` is still "edit, push, live".
 #
 # Triggers: a `push` to main, AND a merged pull request into main. The second
-# one is not redundant — a merge performed through the API with a GitHub App or
-# Actions token produces no workflow-triggering `push` event, so `push` alone
-# silently skips the deploy and the site keeps serving the previous build. The
-# `pull_request` event always arrives. When a merge does fire both, they queue
-# on the concurrency group below and the second run is a no-op (the publish
-# action skips when the built site is unchanged).
+# one is not redundant. Merging PR #12 produced no run at all for this workflow
+# (zero runs for merge commit 3af1319) while the pull_request event from the
+# same merge arrived normally, and the site kept serving the previous build
+# until the deploy was dispatched by hand. The cause was never established — a
+# dropped event during an Actions wobble is the likeliest reading — but a
+# deploy that hangs on a single event delivery is one delivery away from
+# silently not happening, so it listens for both. When a merge fires both, they
+# queue on the concurrency group below and the second run is a no-op (the
+# publish action skips when the built site is unchanged).
 on:
   push:
     branches: [main]

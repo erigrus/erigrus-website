@@ -28,14 +28,21 @@ Four automations, all triggered by the merge itself:
 | the merged head branch | `delete-merged-branch.yml` |
 | the previous build on the live site | `deploy.yml` republishes `main` |
 
-> **Why these listen for `pull_request: closed` and not just `push`.** A merge
-> performed through the API with a GitHub App or Actions token produces **no
-> workflow-triggering `push` event** — the same rule that stops `GITHUB_TOKEN`
-> pushes from looping. A `push`-only deploy therefore skips silently on such a
-> merge and the site keeps serving the previous build, which is exactly what
-> happened on PR #12. The `pull_request` event always arrives, so the
-> merge-time workflows key off that and treat `push` as the extra, not the
-> only, path. When a merge fires both, the second run is a harmless no-op.
+> **Why these listen for `pull_request: closed` and not just `push`.** Merging
+> PR #12 produced **no workflow run at all** for either push-triggered workflow
+> — `deploy.yml` and `clean-staging-on-main.yml` both have zero runs for merge
+> commit `3af1319` — while the `pull_request: closed` event from the same merge
+> arrived and ran `pr-preview.yml` normally. The site kept serving the previous
+> build until the deploy was dispatched by hand.
+>
+> The cause was never established. It happened during an afternoon in which
+> Actions was also leaving jobs queued for 15 minutes before cancelling them
+> unrun, so a dropped event is the likeliest reading; merges made the same way
+> in a sibling repository *did* fire their push-triggered workflows, so it is
+> not a rule about how the merge is performed. Either way, a deploy that
+> depends on a single event delivery is one delivery away from silently not
+> happening. Listening for both is the fix regardless of the cause: when a
+> merge fires both, the second run is a harmless no-op.
 
 Closing a PR **without** merging keeps its branch — that work is not in `main`.
 

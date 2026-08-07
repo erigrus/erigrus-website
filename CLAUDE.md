@@ -15,10 +15,9 @@ Each PR is previewed at `https://erigrus.de/pr-preview/pr-<N>/`
 
 Merging a PR also deletes its head branch and purges its preview directory —
 see "A merged PR leaves nothing behind" in `README.md`. Those workflows fire on
-`pull_request: closed`, **not** on `push` alone: a merge made through the API
-with a GitHub App or Actions token produces no workflow-triggering `push`
-event. Keep that trigger if you touch them, or merges from tooling stop
-deploying.
+`pull_request: closed` **as well as** `push`, deliberately: merging PR #12
+produced no run at all for either push-triggered workflow, and the site went
+un-deployed until someone noticed. Keep both triggers if you touch them.
 
 **Verifying a deploy:** a green `deploy.yml` run only proves `gh-pages` was
 written. The site is live once GitHub's own `pages build and deployment` run
