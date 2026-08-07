@@ -42,3 +42,45 @@ jobs:
         uses: rossjrw/pr-preview-action@v1
         with:
           source-dir: _site
+
+      # The action empties a closed PR's preview but leaves behind the
+      # .nojekyll file it created, so pr-preview/pr-<N>/ lingers on gh-pages
+      # as an empty directory forever. Remove the directory itself, so a
+      # closed PR leaves nothing behind. Runs after the action, on the
+      # gh-pages state the action just pushed.
+      - name: Check out gh-pages
+        if: github.event.action == 'closed'
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: .gh-pages
+          # Full history: the retry below rebases onto gh-pages, which a
+          # shallow clone cannot do.
+          fetch-depth: 0
+
+      - name: Purge the PR's preview directory
+        if: github.event.action == 'closed'
+        working-directory: .gh-pages
+        env:
+          PR_NUMBER: ${{ github.event.number }}
+        run: |
+          dir="pr-preview/pr-${PR_NUMBER}"
+          if [ ! -d "$dir" ]; then
+            echo "OK: nothing left behind at $dir."
+            exit 0
+          fi
+          echo "::notice::Removing leftover preview directory $dir."
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -rq "$dir"
+          git commit -qm "Remove leftover preview directory for PR #${PR_NUMBER}"
+          # A production deploy or another preview may push in between.
+          for attempt in 1 2 3; do
+            if git push origin gh-pages; then
+              exit 0
+            fi
+            echo "Push rejected (attempt ${attempt}/3) — rebasing on gh-pages."
+            git pull --rebase origin gh-pages
+          done
+          echo "Could not push the preview cleanup after 3 attempts." >&2
+          exit 1

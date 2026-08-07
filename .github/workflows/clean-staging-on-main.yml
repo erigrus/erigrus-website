@@ -8,9 +8,16 @@ name: Clean staging on main
 #
 # Pushes made with the default GITHUB_TOKEN do not trigger further workflow
 # runs, so the cleanup commit cannot loop or fire a redundant deploy.
+#
+# That same rule is why `push` alone is not enough as a trigger: a merge
+# performed through the API with a GitHub App or Actions token produces no
+# workflow-triggering push event, so a staging/ that rode in on such a merge
+# would sit on main unnoticed. The `pull_request` event always arrives.
 on:
   push:
     branches: [main]
+  pull_request:
+    types: [closed]
 
 permissions:
   contents: write
@@ -21,6 +28,11 @@ concurrency:
 
 jobs:
   clean:
+    # A pull_request run only counts when it actually merged into main.
+    if: >-
+      github.event_name != 'pull_request'
+      || (github.event.pull_request.merged == true
+          && github.event.pull_request.base.ref == 'main')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
