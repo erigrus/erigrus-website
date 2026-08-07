@@ -3,9 +3,19 @@ name: Deploy site to GitHub Pages
 # Production deploy: assemble the site and publish it to the `gh-pages` branch.
 # Pages must be configured to serve from `gh-pages` / root (one-time settings
 # switch — see README.md). Pushing to `main` is still "edit, push, live".
+#
+# Triggers: a `push` to main, AND a merged pull request into main. The second
+# one is not redundant — a merge performed through the API with a GitHub App or
+# Actions token produces no workflow-triggering `push` event, so `push` alone
+# silently skips the deploy and the site keeps serving the previous build. The
+# `pull_request` event always arrives. When a merge does fire both, they queue
+# on the concurrency group below and the second run is a no-op (the publish
+# action skips when the built site is unchanged).
 on:
   push:
     branches: [main]
+  pull_request:
+    types: [closed]
   workflow_dispatch:
 
 permissions:
@@ -19,9 +29,19 @@ concurrency:
 
 jobs:
   deploy:
+    # Every trigger except pull_request means "publish main". A pull_request
+    # run only counts when it actually merged into main — closing a PR
+    # unmerged must not deploy.
+    if: >-
+      github.event_name != 'pull_request'
+      || (github.event.pull_request.merged == true
+          && github.event.pull_request.base.ref == 'main')
     runs-on: ubuntu-latest
     steps:
+      # Always build from main, never from a PR's merge ref.
       - uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Assemble site
         run: |

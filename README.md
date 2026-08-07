@@ -15,9 +15,29 @@ Every pull request gets a public **preview** at
 `https://erigrus.de/pr-preview/pr-<N>/` (via
 `.github/workflows/pr-preview.yml` + `rossjrw/pr-preview-action`); it's torn
 down automatically when the PR closes. Previews include the PR's `/staging/`
-mirror; production deploys exclude it, and a cleanup workflow
-(`.github/workflows/clean-staging-on-main.yml`) auto-removes `staging/` if it
-ever lands on `main`.
+mirror; production deploys exclude it.
+
+### A merged PR leaves nothing behind
+
+Four automations, all triggered by the merge itself:
+
+| Leftover | Removed by |
+|---|---|
+| `staging/` on `main` | `clean-staging-on-main.yml` |
+| the preview at `pr-preview/pr-<N>/` | `pr-preview.yml` (the action empties it, then a follow-up step deletes the directory the action leaves behind) |
+| the merged head branch | `delete-merged-branch.yml` |
+| the previous build on the live site | `deploy.yml` republishes `main` |
+
+> **Why these listen for `pull_request: closed` and not just `push`.** A merge
+> performed through the API with a GitHub App or Actions token produces **no
+> workflow-triggering `push` event** — the same rule that stops `GITHUB_TOKEN`
+> pushes from looping. A `push`-only deploy therefore skips silently on such a
+> merge and the site keeps serving the previous build, which is exactly what
+> happened on PR #12. The `pull_request` event always arrives, so the
+> merge-time workflows key off that and treat `push` as the extra, not the
+> only, path. When a merge fires both, the second run is a harmless no-op.
+
+Closing a PR **without** merging keeps its branch — that work is not in `main`.
 
 > **One-time setup:** in **Settings → Pages**, set the source to the
 > **`gh-pages` branch / `root`**. Until that switch is made, the Actions

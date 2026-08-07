@@ -1,0 +1,42 @@
+name: Delete merged branch
+
+# A merged PR's head branch is dead weight — the commits live on in main, and
+# the branch only clutters the branch list. GitHub's built-in "automatically
+# delete head branches" setting does the same thing, but it is a repository
+# setting rather than something visible in the repo, so it is done here where
+# it can be read and reviewed.
+#
+# Only merged PRs, only branches in this repository, and never a protected or
+# long-lived branch. Closing a PR without merging keeps the branch — that work
+# is not in main and must not be thrown away.
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+
+jobs:
+  delete:
+    if: >-
+      github.event.pull_request.merged == true
+      && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete the merged head branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          case "$BRANCH" in
+            main|gh-pages)
+              echo "Refusing to delete the protected branch $BRANCH."
+              exit 0
+              ;;
+          esac
+          if gh api -X DELETE "repos/${REPO}/git/refs/heads/${BRANCH}"; then
+            echo "::notice::Deleted merged branch ${BRANCH}."
+          else
+            echo "Branch ${BRANCH} was already gone."
+          fi

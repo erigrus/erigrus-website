@@ -8,10 +8,21 @@ Static site for **https://erigrus.de**. No build step, no framework — edit an
 HTML/CSS file, commit, push. Keep DE (`index.html`, `dashjam/…`) and EN
 (`en/…`, `dashjam/en/…`) versions in sync. See `README.md` for the page map.
 
-**Deploys:** GitHub Actions publishes the site. Pushes to `main` deploy to the
+**Deploys:** GitHub Actions publishes the site. `main` is deployed to the
 `gh-pages` branch (`.github/workflows/deploy.yml`); Pages serves `gh-pages`.
 Each PR is previewed at `https://erigrus.de/pr-preview/pr-<N>/`
 (`.github/workflows/pr-preview.yml`), removed automatically on close.
+
+Merging a PR also deletes its head branch and purges its preview directory —
+see "A merged PR leaves nothing behind" in `README.md`. Those workflows fire on
+`pull_request: closed`, **not** on `push` alone: a merge made through the API
+with a GitHub App or Actions token produces no workflow-triggering `push`
+event. Keep that trigger if you touch them, or merges from tooling stop
+deploying.
+
+**Verifying a deploy:** a green `deploy.yml` run only proves `gh-pages` was
+written. The site is live once GitHub's own `pages build and deployment` run
+succeeds on top of it — check that one before reporting anything as published.
 
 ## Staging mirror protocol  ⚠️ read this every session
 
